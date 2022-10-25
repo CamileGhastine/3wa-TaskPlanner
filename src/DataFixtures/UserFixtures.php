@@ -22,10 +22,12 @@ class UserFixtures extends Fixture
             ->setIsVerified(true)
             ->setPassword($this->hasher->hashPassword($user, 'camile'))
             ;
+
+        $this->addReference('admin', $user);
+
         $manager->persist($user);
 
         $faker = Faker\Factory::create('fr_FR');
-
 
         for($i = 0; $i <10; $i++) {
             $user = new User();
@@ -34,6 +36,9 @@ class UserFixtures extends Fixture
                 ->setIsVerified(true)
                 ->setPassword($this->hasher->hashPassword($user, 'password'))
             ;
+
+            $this->addReference('user' . $i, $user);
+
             $manager->persist($user);
         }
         $manager->flush();

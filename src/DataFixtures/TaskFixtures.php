@@ -4,10 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Task;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker;
 
-class TaskFixtures extends Fixture
+class TaskFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -21,12 +22,19 @@ class TaskFixtures extends Fixture
                 ->setDescription($faker->paragraphs(30, true))
                 ->setIsDone(false)
                 ->setExpiratedAt($date)
+                ->setUser($this->getReference('user' . rand(0,9)))
                 ;
 
             $manager->persist($task);
         }
 
-
         $manager->flush();
+    }
+
+    public function getDependencies()
+    {
+        return [
+            UserFixtures::class,
+        ];
     }
 }
