@@ -5,9 +5,9 @@
 {% block body %}
     <h1>Liste des tâches à réaliser</h1>
 
-    {% for i in 1 ..5 %}
+    {% for task in tasks %}
         <div class="card mt-5">
-            <h3 class="card-header text-center">Title {{ i }}</h3>
+            <h3 class="card-header text-center">{{ task.title }}</h3>
             <div class="card-body">
                 <div class="row text-center">
                     <div class="col-6">URGENT</div>
@@ -24,13 +24,13 @@
             </div>
             <hr>
             <div class="card-body">
-                <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam aliquid animi aperiam aspernatur beatae commodi dolore dolores dolorum, ducimus ea eaque eligendi eos esse et exercitationem illo ipsa itaque labore magnam maxime officiis omnis pariatur perspiciatis, quam qui quidem quod quos reiciendis saepe sapiente sed soluta sunt totam unde ut, voluptate voluptatibus. Aperiam at eius illum nesciunt odio, quaerat recusandae totam! Aliquid assumenda consectetur cumque debitis delectus deleniti dignissimos dolor eum exercitationem hic illum in ipsum, iure iusto minus natus nobis numquam omnis quia quibusdam quod quos reiciendis suscipit temporibus, totam unde voluptas voluptatem! Dolor doloribus ea nemo odit tenetur. ...</p>
+                <p class="card-text">{{ task.description }} ...</p>
             </div>
 
             <div class="card-footer text-muted">
                 <div class="row text-center">
-                    <div class="col-6">Jojo l'asticot</div>
-                    <div class="col-6">A faire pour le 30/10/2022</div>
+                    <div class="col-6">jojo l'asticot</div>
+                    <div class="col-6">A faire pour le {{ task.expiratedAt | date("d/m/Y")  }}</div>
                 </div>
 
             </div>
