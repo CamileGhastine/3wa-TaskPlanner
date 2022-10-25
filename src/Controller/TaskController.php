@@ -16,14 +16,9 @@ class TaskController extends AbstractController
     #[Route('/tasks', name: 'app_tasks')]
     public function index(CategoryRepository $categoryRepo): Response
     {
-
-        $categories = $categoryRepo->findAll();
-
-        $tasks = $this->taskRepo->findAll();
-
         return $this->render('task/index.html.twig', [
-            'tasks' => $tasks,
-            'categories' =>$categories
+            'tasks' => $categoryRepo->findAll(),
+            'categories' => $this->taskRepo->findAll()
         ]);
     }
 }
