@@ -24,6 +24,9 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
                 ->setExpiratedAt($date)
                 ->setUser($this->getReference('user' . rand(0,9)))
                 ;
+            for($j = 0; $j < rand(1, 3); $j++) {
+                $task->addCategory($this->getReference('category' . rand(0, 4)));
+            }
 
             $manager->persist($task);
         }
@@ -35,6 +38,7 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             UserFixtures::class,
+            CategoryFixtures::class,
         ];
     }
 }
