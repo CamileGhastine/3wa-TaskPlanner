@@ -24,7 +24,7 @@
             </div>
             <hr>
             <div class="card-body">
-                <p class="card-text">{{ task.description }} ...</p>
+                <p class="card-text">{{ task.description | slice (0, 300)~'...' }}</p>
             </div>
 
             <div class="card-footer text-muted">
