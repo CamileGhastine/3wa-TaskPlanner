@@ -89,6 +89,24 @@ public function findAllTaskWithUserAndCategoryByCategory(int $id): array
         }
     }
 
+    public function findByKeyWOrd($word)
+    {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.categories', 'c')
+            ->addSelect('c')
+            ->leftJoin('t.tags', 'tag')
+            ->addSelect('tag')
+            ->orWhere('tag.name LIKE :word' )
+            ->orWhere('t.title LIKE :word')
+            ->orWhere('c.name LIKE :word')
+            ->setParameter('word', "%$word%")
+            ->orderBy('t.expiratedAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
 //    /**
 //     * @return Task[] Returns an array of Task objects
 //     */
