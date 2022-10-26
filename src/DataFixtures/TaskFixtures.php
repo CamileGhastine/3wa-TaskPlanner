@@ -28,6 +28,8 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
                 $task->addCategory($this->getReference('category' . rand(0, 4)));
             }
 
+            $this->addReference('task' . $i, $task);
+
             $manager->persist($task);
         }
 

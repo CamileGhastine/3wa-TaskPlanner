@@ -35,9 +35,13 @@ class Task
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'tasks')]
     private Collection $categories;
 
+    #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class)]
+    private Collection $tags;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,6 +131,36 @@ class Task
     {
         if ($this->categories->removeElement($category)) {
             $category->removeTask($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->setTask($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        if ($this->tags->removeElement($tag)) {
+            // set the owning side to null (unless already changed)
+            if ($tag->getTask() === $this) {
+                $tag->setTask(null);
+            }
         }
 
         return $this;
