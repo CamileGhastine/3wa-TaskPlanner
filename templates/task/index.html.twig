@@ -12,7 +12,7 @@
             </div>
             {% for category in categories %}
                 <div class="col-12 mt-5">
-                    <span class="badge bg-primary">{{ category.name }}</span>
+                    <a href="{{ path('app_tasks_by_category', {'id' : category.id}) }}"><span class="badge bg-primary">{{ category.name }}</span></a>
                 </div>
             {% endfor %}
         </div>
@@ -31,7 +31,7 @@
                         <div class="row">
                                 {% for category in task.categories %}
                                     <div class="col-4 text-center">
-                                        <span class="badge bg-primary ">{{ category.name }}</span>
+                                       <span class="badge bg-primary ">{{ category.name }}</span>
                                     </div>
                                 {% endfor %}
                         </div>
