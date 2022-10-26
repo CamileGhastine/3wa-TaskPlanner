@@ -17,7 +17,7 @@ class TaskController extends AbstractController
     public function index(CategoryRepository $categoryRepo): Response
     {
         return $this->render('task/index.html.twig', [
-            'tasks' => $this->taskRepo->findAll(),
+            'tasks' => $this->taskRepo->findAllTaskWithUserAndCategory(),
             'categories' => $categoryRepo->findAll(),
         ]);
     }

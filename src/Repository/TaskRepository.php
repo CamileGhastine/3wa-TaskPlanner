@@ -21,6 +21,18 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
+    public function findAllTaskWithUserAndCategory() {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.categories', 'c')
+            ->addSelect('c')
+            ->orderBy('t.expiratedAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+
     public function save(Task $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
