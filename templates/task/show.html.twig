@@ -27,7 +27,16 @@
         <div class="card-body">
             <p class="card-text">{{ task.description | slice (0, 300)~'...' }}</p>
         </div>
-
+        <hr>
+        <div class="card-body">
+            <div class="row">
+                {% for tag in task.tags %}
+                    <div class="col-4 text-center">
+                        <span class="badge bg-success ">{{ tag.name }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
         <div class="card-footer text-muted">
             <div class="row text-center">
                 <div class="col-6">{{ task.user.username }}</div>
