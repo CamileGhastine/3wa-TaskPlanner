@@ -21,4 +21,12 @@ class TaskController extends AbstractController
             'categories' => $categoryRepo->findAll(),
         ]);
     }
+
+    #[Route('/task/{id<[0-9]+>}', name: 'app_show_task')]
+    public function show(int $id): Response
+    {
+        return $this->render('task/show.html.twig', [
+            'task' => $this->taskRepo->find($id),
+        ]);
+    }
 }
