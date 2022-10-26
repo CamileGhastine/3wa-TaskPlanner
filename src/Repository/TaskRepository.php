@@ -21,6 +21,9 @@ class TaskRepository extends ServiceEntityRepository
         parent::__construct($registry, Task::class);
     }
 
+    /**
+     * @return array|null
+     */
     public function findAllTaskWithUserAndCategory() {
         return $this->createQueryBuilder('t')
             ->leftJoin('t.user', 'u')
@@ -32,6 +35,25 @@ class TaskRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @param $id
+     * @return Task|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function findTaskByIdWithUserCategoryAndTag($id) {
+        return $this->createQueryBuilder('t')
+            ->leftJoin('t.user', 'u')
+            ->addSelect('u')
+            ->leftJoin('t.categories', 'c')
+            ->addSelect('c')
+            ->leftJoin('t.tags', 'tag')
+            ->addSelect('tag')
+            ->where('t.id = :id')
+            ->setParameter('id', $id)
+            ->orderBy('t.expiratedAt', 'ASC')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 
     public function save(Task $entity, bool $flush = false): void
     {

@@ -29,11 +29,9 @@
         </div>
         <hr>
         <div class="card-body">
-            <div class="row">
+            <div class="text-center">
                 {% for tag in task.tags %}
-                    <div class="col-4 text-center">
-                        <span class="badge bg-success ">{{ tag.name }}</span>
-                    </div>
+                        <span class="badge bg-success me-2">{{ tag.name }}</span>
                 {% endfor %}
             </div>
         </div>

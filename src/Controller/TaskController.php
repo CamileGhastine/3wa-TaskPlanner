@@ -26,7 +26,7 @@ class TaskController extends AbstractController
     public function show(int $id): Response
     {
         return $this->render('task/show.html.twig', [
-            'task' => $this->taskRepo->find($id),
+            'task' => $this->taskRepo->findTaskByIdWithUserCategoryAndTag($id),
         ]);
     }
 }
