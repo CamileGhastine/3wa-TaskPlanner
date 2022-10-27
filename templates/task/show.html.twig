@@ -10,7 +10,11 @@
         <div class="card-body">
             <div class="row text-center">
                 <div class="col-6"><span class="badge bg-{{ task.urgent.color }}">{{ task.urgent.label }}</span></div>
-                <div class="col-6 ">Fait</div>
+                {% if task.isDone %}
+                    <div class="col-6 "><a href="{{ path('app_task_done', {'id' : task.id, 'token_csrf' : csrf_token('change_done'~task.id)}) }}">✔</a>️</div>
+                {% else %}
+                    <div class="col-6 "><a href="{{ path('app_task_done', {'id' : task.id, 'token_csrf' : csrf_token('change_done'~task.id)}) }}">⏳</a></div>
+                {% endif %}
             </div>
         </div>
         <hr>

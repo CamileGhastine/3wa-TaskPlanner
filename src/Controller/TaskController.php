@@ -90,4 +90,10 @@ class TaskController extends AbstractController
 
         return $this->redirectToRoute('app_tasks');
     }
+
+    #[Route('/task/status/{id<[0-9]+>}', name: 'app_task_done')]
+    public function changeIsDone(Task $task): Response
+    {
+       dd('change is done');
+    }
 }
