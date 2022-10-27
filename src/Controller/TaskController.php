@@ -20,6 +20,10 @@ class TaskController extends AbstractController
         return $this->render('task/index.html.twig', [
             'tasks' => $this->taskRepo->findAllTaskWithUserAndCategory(),
             'categories' => $this->categoryRepo->findAll(),
+            'urgent' => [
+                'color' => 'danger',
+                'label' => 'URGENT'
+            ]
         ]);
     }
 
