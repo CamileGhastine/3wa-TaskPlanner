@@ -6,6 +6,7 @@ use App\Entity\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,10 +49,9 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/{id<[0-9]+>}', name: 'app_show_task')]
-    public function show(int $id): Response
+    #[Entity('task', expr: 'repository.findTaskByIdWithUserCategoryAndTag(id)')]
+    public function show(Task $task): Response
     {
-        $task = $this->taskRepo->findTaskByIdWithUserCategoryAndTag($id);
-
         $task = $this->urgentCalculator->setUrgency($task);
 
         return $this->render('task/show.html.twig', [
@@ -71,10 +71,8 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/delete/{id<[0-9]+>}', name: 'app_task_delete')]
-    public function delete(int $id, TaskRepository $taskRepo, Request $request): Response
+    public function delete(Task $task, TaskRepository $taskRepo, Request $request): Response
     {
-        $task = $taskRepo->find($id);
-
         if(
             !$this->isGranted('ROLE_ADMIN')
             || !$task->isIsDone()
@@ -83,7 +81,7 @@ class TaskController extends AbstractController
         {
             $this->addFlash('error', 'Interdit de supprimer' );
 
-            return $this->redirectToRoute('app_show_task', ['id' => $id]);
+            return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
         }
 
         $taskRepo->remove($task, true);
