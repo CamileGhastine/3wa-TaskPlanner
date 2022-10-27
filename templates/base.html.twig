@@ -19,6 +19,14 @@
     {% include('shared/_menu.html.twig') %}
 
     <div class="container">
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-dismissible alert-danger">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                {{ message }}
+            </div>
+        {% endfor %}
+
         {% block body %}{% endblock %}
     </div>
 
