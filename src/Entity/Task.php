@@ -35,7 +35,7 @@ class Task
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'tasks')]
     private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class)]
+    #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class, orphanRemoval: true)]
     private Collection $tags;
 
     public function __construct()

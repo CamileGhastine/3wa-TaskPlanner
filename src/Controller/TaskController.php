@@ -50,4 +50,13 @@ class TaskController extends AbstractController
             'categories' => $this->categoryRepo->findAll(),
         ]);
     }
+
+    #[Route('/task/delete/{id<[0-9]+>}', name: 'app_task_delete')]
+    public function delete(int $id, TaskRepository $taskRepo): Response
+    {
+        $task = $taskRepo->find($id);
+        $taskRepo->remove($task, true);
+
+        return $this->redirectToRoute('app_tasks');
+    }
 }
