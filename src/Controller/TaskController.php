@@ -6,13 +6,12 @@ use App\Entity\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
-use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
+
 
 class TaskController extends AbstractController
 {
@@ -91,8 +90,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/status/{id<[0-9]+>}', name: 'app_task_done')]
-    public function changeIsDone(Task $task, EntityManagerInterface $em): Response
+    public function changeIsDone(Task $task, Request $request): Response
     {
+        if(!$this->isCsrfTokenValid('change_done'. $task->getId(), $request->query->get('token_csrf'))){
+        $this->addFlash('error', 'Interdit de changer le status de la tâche' );
+
+        return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
+        }
+
        $task->setIsDone(!$task->isIsDone());
 
        $this->taskRepo->save($task, true);

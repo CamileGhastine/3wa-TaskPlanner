@@ -10,10 +10,14 @@
         <div class="card-body">
             <div class="row text-center">
                 <div class="col-6"><span class="badge bg-{{ task.urgent.color }}">{{ task.urgent.label }}</span></div>
+                {% set href = (app.user == task.user)
+                    ? path('app_task_done', {'id' : task.id, 'token_csrf' : csrf_token('change_done'~task.id)})
+                    : '#'
+                %}
                 {% if task.isDone %}
-                    <div class="col-6 "><a href="{{ path('app_task_done', {'id' : task.id, 'token_csrf' : csrf_token('change_done'~task.id)}) }}">✔</a>️</div>
+                    <div class="col-6 "><a href="{{ href }}">✔</a>️</div>
                 {% else %}
-                    <div class="col-6 "><a href="{{ path('app_task_done', {'id' : task.id, 'token_csrf' : csrf_token('change_done'~task.id)}) }}">⏳</a></div>
+                    <div class="col-6 "><a href="{{ href }}">⏳</a></div>
                 {% endif %}
             </div>
         </div>
@@ -43,7 +47,7 @@
             <div class="row text-center">
                 <div class="col-4">{{ task.user.username }}</div>
                 <div class="col-4">A faire pour le {{ task.expiratedAt | date("d/m/Y")  }}</div>
-                {% if is_granted('ROLE_ADMIN')  %}
+                {% if is_granted('ROLE_ADMIN') and task.isDone %}
                     <div class="col-4"><a href="{{ path('app_task_delete', {'id' : task.id , 'token_csrf' : csrf_token('delete_task'~task.id)}) }}">🗑️</a></div>
                 {%  endif %}
             </div>
