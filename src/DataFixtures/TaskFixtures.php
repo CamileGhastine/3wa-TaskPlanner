@@ -15,7 +15,7 @@ class TaskFixtures extends Fixture implements DependentFixtureInterface
         $faker = Faker\Factory::create('fr_FR');
 
         for ($i = 0; $i < 5; $i++) {
-            $date =$faker->dateTimeBetween('-7 days', '+7 days');
+            $date =$faker->dateTimeBetween('-20 days', '+7 days');
 
             $task = new Task();
             $task->setTitle($faker->sentence())

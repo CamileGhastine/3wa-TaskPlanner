@@ -22,7 +22,7 @@
                     <h3 class="card-header text-center"><a href="{{ path('app_show_task', {'id' : task.id}) }}">{{ task.title }}</a> </h3>
                     <div class="card-body">
                         <div class="row text-center">
-                            <div class="col-6"><span class="badge bg-{{ urgent.color }}">{{ urgent.label }}</span></div>
+                            <div class="col-6"><span class="badge bg-{{ task.urgent.color }}">{{ task.urgent.label }}</span></div>
                             <div class="col-6 ">Fait</div>
                         </div>
                     </div>

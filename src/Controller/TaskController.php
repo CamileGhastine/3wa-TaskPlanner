@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
+use App\Service\UrgentCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,16 +17,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task', name: 'app_tasks')]
-    public function index(): Response
+    public function index(UrgentCalculator $urgentCalculator): Response
     {
+        $tasks = $urgentCalculator->calcul();
+
         return $this->render('task/index.html.twig', [
-            'tasks' => $this->taskRepo->findAllTaskWithUserAndCategory(),
+            'tasks' => $tasks,
             'categories' => $this->categoryRepo->findAll(),
-            'urgent' => [
-                'color' => 'danger',
-                'label' => 'URGENT'
-            ]
-        ]);
+            ]);
     }
 
     #[Route('/task/category/{id<[0-9]+>}', name: 'app_tasks_by_category')]
