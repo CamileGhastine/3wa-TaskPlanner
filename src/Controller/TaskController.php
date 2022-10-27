@@ -6,6 +6,7 @@ use App\Entity\Task;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,8 +91,12 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/status/{id<[0-9]+>}', name: 'app_task_done')]
-    public function changeIsDone(Task $task): Response
+    public function changeIsDone(Task $task, EntityManagerInterface $em): Response
     {
-       dd('change is done');
+       $task->setIsDone(!$task->isIsDone());
+
+       $this->taskRepo->save($task, true);
+
+       return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
     }
 }
