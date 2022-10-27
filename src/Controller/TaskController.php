@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class TaskController extends AbstractController
 {
@@ -52,14 +53,21 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/delete/{id<[0-9]+>}', name: 'app_task_delete')]
-    public function delete(int $id, TaskRepository $taskRepo): Response
+    public function delete(int $id, TaskRepository $taskRepo, Request $request): Response
     {
-        if(!$this->isGranted('ROLE_ADMIN')) {
+        $task = $taskRepo->find($id);
+
+        if(
+            !$this->isGranted('ROLE_ADMIN')
+            || !$task->isIsDone()
+            || !$this->isCsrfTokenValid('delete_task'. $task->getId() , $request->query->get('token_csrf'))
+        )
+        {
             $this->addFlash('error', 'Interdit de supprimer' );
+
             return $this->redirectToRoute('app_show_task', ['id' => $id]);
         }
 
-        $task = $taskRepo->find($id);
         $taskRepo->remove($task, true);
 
         return $this->redirectToRoute('app_tasks');
