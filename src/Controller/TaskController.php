@@ -19,7 +19,9 @@ class TaskController extends AbstractController
     #[Route('/task', name: 'app_tasks')]
     public function index(UrgentCalculator $urgentCalculator): Response
     {
-        $tasks = $urgentCalculator->calcul();
+        $tasks = $this->taskRepo->findAllTaskWithUserAndCategory();
+
+        $tasks = $urgentCalculator->setUrgency($tasks);
 
         return $this->render('task/index.html.twig', [
             'tasks' => $tasks,
@@ -37,10 +39,14 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/{id<[0-9]+>}', name: 'app_show_task')]
-    public function show(int $id): Response
+    public function show(int $id, UrgentCalculator $urgentCalculator): Response
     {
+        $task = $this->taskRepo->findTaskByIdWithUserCategoryAndTag($id);
+
+        $task = $urgentCalculator->calcul($task);
+
         return $this->render('task/show.html.twig', [
-            'task' => $this->taskRepo->findTaskByIdWithUserCategoryAndTag($id),
+            'task' => $task,
         ]);
     }
 
