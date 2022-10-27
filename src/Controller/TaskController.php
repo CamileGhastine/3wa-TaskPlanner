@@ -7,10 +7,14 @@ use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 
 class TaskController extends AbstractController
@@ -18,7 +22,8 @@ class TaskController extends AbstractController
     public function __construct(
         private TaskRepository $taskRepo,
         private CategoryRepository $categoryRepo,
-        private UrgentCalculator $urgentCalculator
+        private UrgentCalculator $urgentCalculator,
+        private MailerInterface $mailer
     ) {
     }
 
@@ -102,6 +107,21 @@ class TaskController extends AbstractController
 
        $this->taskRepo->save($task, true);
 
+       $this->sendEmailtoAdminWhenIsDone($task);
+
        return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
+    }
+
+
+    private function sendEmailtoAdminWhenIsDone(Task $task): void
+    {
+        $email = (new Email())
+            ->from('admin@taskplanner.fr')
+            ->to('camile@camile.fr')
+            ->subject('change status')
+            ->text('supprime si tu veux :')
+            ->html('<a href="https://localhost:8000/task/' . $task->getId() . '">See Twig integration for better HTML integration!</a>');
+
+        $this->mailer->send($email);
     }
 }
