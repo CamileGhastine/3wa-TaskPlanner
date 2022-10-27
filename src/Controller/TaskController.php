@@ -14,15 +14,19 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 
 class TaskController extends AbstractController
 {
-    public function __construct(private TaskRepository $taskRepo, private CategoryRepository $categoryRepo) {
+    public function __construct(
+        private TaskRepository $taskRepo,
+        private CategoryRepository $categoryRepo,
+        private UrgentCalculator $urgentCalculator
+    ) {
     }
 
     #[Route('/task', name: 'app_tasks')]
-    public function index(UrgentCalculator $urgentCalculator): Response
+    public function index(): Response
     {
         $tasks = $this->taskRepo->findAllTaskWithUserAndCategory();
 
-        $tasks = $urgentCalculator->setUrgency($tasks);
+        $tasks = $this->urgentCalculator->setUrgency($tasks);
 
         return $this->render('task/index.html.twig', [
             'tasks' => $tasks,
@@ -33,18 +37,22 @@ class TaskController extends AbstractController
     #[Route('/task/category/{id<[0-9]+>}', name: 'app_tasks_by_category')]
     public function indexByCategory(int $id): Response
     {
+        $tasks = $this->taskRepo->findAllTaskWithUserAndCategoryByCategory($id);
+
+        $tasks = $this->urgentCalculator->setUrgency($tasks);
+
         return $this->render('task/index.html.twig', [
-            'tasks' => $this->taskRepo->findAllTaskWithUserAndCategoryByCategory($id),
+            'tasks' => $tasks,
             'categories' => $this->categoryRepo->findAll(),
         ]);
     }
 
     #[Route('/task/{id<[0-9]+>}', name: 'app_show_task')]
-    public function show(int $id, UrgentCalculator $urgentCalculator): Response
+    public function show(int $id): Response
     {
         $task = $this->taskRepo->findTaskByIdWithUserCategoryAndTag($id);
 
-        $task = $urgentCalculator->calcul($task);
+        $task = $this->urgentCalculator->setUrgency($task);
 
         return $this->render('task/show.html.twig', [
             'task' => $task,
