@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\Task;
+use App\Event\EventIsDoneChange;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -95,7 +97,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/status/{id<[0-9]+>}', name: 'app_task_done')]
-    public function changeIsDone(Task $task, Request $request): Response
+    public function changeIsDone(Task $task, Request $request, EventDispatcherInterface $dispatcher): Response
     {
         if(!$this->isCsrfTokenValid('change_done'. $task->getId(), $request->query->get('token_csrf'))){
         $this->addFlash('error', 'Interdit de changer le status de la tâche' );
@@ -107,21 +109,9 @@ class TaskController extends AbstractController
 
        $this->taskRepo->save($task, true);
 
-       $this->sendEmailtoAdminWhenIsDone($task);
+       $event = New EventIsDoneChange($this->mailer, $task);
+       $dispatcher->dispatch($event, 'EventIsDoneChange');
 
        return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
-    }
-
-
-    private function sendEmailtoAdminWhenIsDone(Task $task): void
-    {
-        $email = (new Email())
-            ->from('admin@taskplanner.fr')
-            ->to('camile@camile.fr')
-            ->subject('change status')
-            ->text('supprime si tu veux :')
-            ->html('<a href="https://localhost:8000/task/' . $task->getId() . '">See Twig integration for better HTML integration!</a>');
-
-        $this->mailer->send($email);
     }
 }
