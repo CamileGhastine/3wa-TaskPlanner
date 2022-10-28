@@ -17,14 +17,7 @@ class EventIsDoneChange extends Event
         $this->task = $task;
     }
 
-    public function sendEmail() {
-        $email = (new Email())
-            ->from('admin@taskplanner.fr')
-            ->to('camile@camile.fr')
-            ->subject('change status')
-            ->text('supprime si tu veux :')
-            ->html('<a href="https://localhost:8000/task/' . $this->task->getId() . '">See Twig integration for better HTML integration!</a>');
-
-        $this->mailer->send($email);
+    public function getTask() {
+        return $this->task;
     }
 }

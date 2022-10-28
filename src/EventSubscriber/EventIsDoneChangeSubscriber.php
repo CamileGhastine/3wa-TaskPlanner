@@ -2,14 +2,20 @@
 
 namespace App\EventSubscriber;
 
+use App\Service\Mailer;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class EventIsDoneChangeSubscriber implements EventSubscriberInterface
 {
+    public function __construct(private Mailer $mailer) {}
+
+
     public function onEventIsDoneChange($event): void
     {
-        $event->sendEmail();
+       $this->mailer->sendEmailToAdminWhenIsDone($event->getTask());
     }
+
+
 
     public static function getSubscribedEvents(): array
     {
