@@ -119,7 +119,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/create', name:'app_task_create', methods:['POST', 'GET'])]
-    public function create(Request $request, EntityManagerInterface $em, FormFactoryInterface $formFactory): Response
+    public function create(Request $request, EntityManagerInterface $em): Response
     {
         if(!$this->getUser()) {
             $this->addFlash('error', 'merci de vous connecter pour créer une tâche');
@@ -128,6 +128,7 @@ class TaskController extends AbstractController
         }
 
         $task = new Task($this->getUser());
+        $task->setExpiratedAt(new \DateTime('NOW'));
 
         $taskForm = $this->createForm(TaskType::class, $task);
 
@@ -142,11 +143,31 @@ class TaskController extends AbstractController
 
         return $this->render('/task/create.html.twig', [
             'taskForm' => $taskForm->createView(),
-
         ]);
     }
 
-    private function verifiedUserConnected () {
 
+    #[Route('/task/update/{id<[0-9]+>}', name:'app_task_update', methods:['POST', 'GET'])]
+    public function update(Task $task, Request $request, EntityManagerInterface $em): Response
+    {
+        if(!$this->getUser() === $task->getUser()) {
+            $this->addFlash('error', 'Vous ne pouvez éditer cette tâche.');
+
+            return $this->redirectToRoute('app_home');
+        }
+
+        $taskForm = $this->createForm(TaskType::class, $task);
+
+        $taskForm->handleRequest($request);
+
+        if($taskForm->isSubmitted() && $taskForm->isValid()) {
+            $em->flush();
+
+            return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
+        }
+
+        return $this->render('/task/create.html.twig', [
+            'taskForm' => $taskForm->createView(),
+        ]);
     }
 }

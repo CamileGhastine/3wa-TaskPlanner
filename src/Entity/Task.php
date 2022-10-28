@@ -33,7 +33,6 @@ class Task
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    #[Assert\GreaterThan('today', message: 'date du jour minimum')]
     private ?\DateTimeInterface $expiratedAt = null;
 
     #[ORM\Column]
