@@ -150,16 +150,19 @@ class TaskController extends AbstractController
     #[Route('/edit/{id<[0-9]+>}', name:'app_task_edit', methods:['POST', 'GET'])]
     public function create(int $id = null, Request $request, EntityManagerInterface $em): Response
     {
-        if(!$this->getUser()) {
-            $this->addFlash('error', 'merci de vous connecter pour créer une tâche');
+        $task = $id
+            ? $this->taskRepo->find($id)
+            : (new Task($this->getUser()))->setExpiratedAt(new \DateTime('NOW'));
+
+        if(!$this->getUser() || $this->getUser()!== $task->getUser()) {
+            $message = $id
+                ? 'Vous ne pouvez pas éditer cette tâche'
+                : 'Merci de vous connecter pour créer une tâche';
+
+                $this->addFlash('error', $message);
 
             return $this->redirectToRoute('app_login');
         }
-
-        $task = new Task($this->getUser());
-        $task->setExpiratedAt(new \DateTime('NOW'));
-
-        if($id) $task = $this->taskRepo->find($id);
 
         $taskForm = $this->createForm(TaskType::class, $task);
 
