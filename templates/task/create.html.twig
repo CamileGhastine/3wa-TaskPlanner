@@ -18,6 +18,7 @@
         <div class="col-2">{{ form_label(taskForm.title, 'Titre', {'label_attr': {'id' : 'toto'}}) }}</div>
         <div class="col-10">{{ form_widget(taskForm.title) }}</div>
     </div>
+    {{ form_errors(taskForm.title) }}
     {{ form_row(taskForm.expiratedAt) }}
 
 {{ form_row(taskForm.description) }}

@@ -7,8 +7,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[UniqueEntity(fields: ['title'], message: 'Ce titre existe déjà')]
 class Task
 {
     #[ORM\Id]
@@ -16,13 +19,21 @@ class Task
     #[ORM\Column]
     private ?int $id = null;
 
+
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 100,
+        minMessage: 'Le titre doit faire minimum {{ limit }} charactères',
+        maxMessage: 'Le titre doit faire maximum {{ limit }} charactères',
+    )]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\GreaterThan('today', message: 'date du jour minimum')]
     private ?\DateTimeInterface $expiratedAt = null;
 
     #[ORM\Column]
@@ -33,6 +44,12 @@ class Task
     private ?User $user = null;
 
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'tasks')]
+    #[Assert\Count(
+        min: 1,
+        max: 3,
+        minMessage: 'au moins 1 catégorie',
+        maxMessage: 'max 3 catégories'
+    )]
     private Collection $categories;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class, orphanRemoval: true)]

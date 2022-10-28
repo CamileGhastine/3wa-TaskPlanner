@@ -29,7 +29,7 @@ class TaskType extends AbstractType
         $builder
             ->add('title', TextType::class, [
                 'label' => 'Titre',
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'class' => 'titi',
                     'id' => 'tata'

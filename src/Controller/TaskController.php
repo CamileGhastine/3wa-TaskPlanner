@@ -135,7 +135,7 @@ class TaskController extends AbstractController
 
         $taskForm->handleRequest($request);
 
-        if($taskForm->isSubmitted()) {
+        if($taskForm->isSubmitted() && $taskForm->isValid()) {
             $em->persist($task);
             $em->flush();
 
