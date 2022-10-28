@@ -10,18 +10,14 @@ use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\User\UserInterface;
 
-
+#[Route('/task')]
 class TaskController extends AbstractController
 {
     public function __construct(
@@ -32,7 +28,10 @@ class TaskController extends AbstractController
     ) {
     }
 
-    #[Route('/task', name: 'app_tasks')]
+    /**
+     * @return Response
+     */
+    #[Route('/', name: 'app_tasks')]
     public function index(): Response
     {
         $tasks = $this->taskRepo->findAllTaskWithUserAndCategory();
@@ -45,7 +44,11 @@ class TaskController extends AbstractController
             ]);
     }
 
-    #[Route('/task/category/{id<[0-9]+>}', name: 'app_tasks_by_category')]
+    /**
+     * @param int $id
+     * @return Response
+     */
+    #[Route('/category/{id<[0-9]+>}', name: 'app_tasks_by_category')]
     public function indexByCategory(int $id): Response
     {
         $tasks = $this->taskRepo->findAllTaskWithUserAndCategoryByCategory($id);
@@ -58,7 +61,11 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/task/{id<[0-9]+>}', name: 'app_show_task')]
+    /**
+     * @param Task $task
+     * @return Response
+     */
+    #[Route('/{id<[0-9]+>}', name: 'app_show_task')]
     #[Entity('task', expr: 'repository.findTaskByIdWithUserCategoryAndTag(id)')]
     public function show(Task $task): Response
     {
@@ -69,7 +76,11 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/task/search', name: 'app_tasks_search')]
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    #[Route('/search', name: 'app_tasks_search')]
     public function search(Request $request): Response
     {
         $search = $request->request->get('search');
@@ -80,7 +91,13 @@ class TaskController extends AbstractController
         ]);
     }
 
-    #[Route('/task/delete/{id<[0-9]+>}', name: 'app_task_delete')]
+    /**
+     * @param Task $task
+     * @param TaskRepository $taskRepo
+     * @param Request $request
+     * @return Response
+     */
+    #[Route('/delete/{id<[0-9]+>}', name: 'app_task_delete')]
     public function delete(Task $task, TaskRepository $taskRepo, Request $request): Response
     {
         if(
@@ -99,7 +116,13 @@ class TaskController extends AbstractController
         return $this->redirectToRoute('app_tasks');
     }
 
-    #[Route('/task/status/{id<[0-9]+>}', name: 'app_task_done')]
+    /**
+     * @param Task $task
+     * @param Request $request
+     * @param EventDispatcherInterface $dispatcher
+     * @return Response
+     */
+    #[Route('/status/{id<[0-9]+>}', name: 'app_task_done')]
     public function changeIsDone(Task $task, Request $request, EventDispatcherInterface $dispatcher): Response
     {
         if(!$this->isCsrfTokenValid('change_done'. $task->getId(), $request->query->get('token_csrf'))){
@@ -118,8 +141,14 @@ class TaskController extends AbstractController
        return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
     }
 
-    #[Route('/task/create', name:'app_task_create', methods:['POST', 'GET'])]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    /**
+     * @param int|null $id
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return Response
+     */
+    #[Route('/edit/{id<[0-9]+>}', name:'app_task_edit', methods:['POST', 'GET'])]
+    public function create(int $id = null, Request $request, EntityManagerInterface $em): Response
     {
         if(!$this->getUser()) {
             $this->addFlash('error', 'merci de vous connecter pour créer une tâche');
@@ -129,6 +158,8 @@ class TaskController extends AbstractController
 
         $task = new Task($this->getUser());
         $task->setExpiratedAt(new \DateTime('NOW'));
+
+        if($id) $task = $this->taskRepo->find($id);
 
         $taskForm = $this->createForm(TaskType::class, $task);
 
@@ -141,33 +172,9 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
         }
 
-        return $this->render('/task/create.html.twig', [
+        return $this->render('/task/edit.html.twig', [
             'taskForm' => $taskForm->createView(),
-        ]);
-    }
-
-
-    #[Route('/task/update/{id<[0-9]+>}', name:'app_task_update', methods:['POST', 'GET'])]
-    public function update(Task $task, Request $request, EntityManagerInterface $em): Response
-    {
-        if(!$this->getUser() === $task->getUser()) {
-            $this->addFlash('error', 'Vous ne pouvez éditer cette tâche.');
-
-            return $this->redirectToRoute('app_home');
-        }
-
-        $taskForm = $this->createForm(TaskType::class, $task);
-
-        $taskForm->handleRequest($request);
-
-        if($taskForm->isSubmitted() && $taskForm->isValid()) {
-            $em->flush();
-
-            return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
-        }
-
-        return $this->render('/task/create.html.twig', [
-            'taskForm' => $taskForm->createView(),
+            'update' => (bool)$id
         ]);
     }
 }

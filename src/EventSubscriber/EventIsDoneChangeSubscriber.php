@@ -15,8 +15,6 @@ class EventIsDoneChangeSubscriber implements EventSubscriberInterface
        $this->mailer->sendEmailToAdminWhenIsDone($event->getTask());
     }
 
-
-
     public static function getSubscribedEvents(): array
     {
         return [
