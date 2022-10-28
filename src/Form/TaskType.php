@@ -9,6 +9,7 @@ use App\Repository\TaskRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -52,6 +53,15 @@ class TaskType extends AbstractType
                 'by_reference' => false,
                 'label' => 'Catégories'
                 ])
+            ->add('tags', CollectionType::class, [
+                'entry_type' => TagType::class,
+                'entry_options' => [
+                    'attr' => ['class' => 'tag'],
+                ],
+                'allow_add' => true,
+                'prototype' => true,
+                'by_reference' => false
+            ])
             ->add('Enregistrer', SubmitType::class)
         ;
     }

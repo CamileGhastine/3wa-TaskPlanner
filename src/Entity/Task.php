@@ -52,7 +52,7 @@ class Task
     )]
     private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'task', targetEntity: Tag::class, orphanRemoval: true, cascade: ['persist', 'delete'])]
     private Collection $tags;
 
     private array $urgent;
