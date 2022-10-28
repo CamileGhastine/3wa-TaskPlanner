@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Création d'une tâche{% endblock %}
+
+{% block body %}
+    <style>
+        #toto {
+            color: red;
+        }
+    </style>
+<h1>Création d'une tâche</h1>
+
+{{ form_start(taskForm) }}
+
+{{ form_errors(taskForm) }}
+
+    <div class="row">
+        <div class="col-2">{{ form_label(taskForm.title, 'Titre', {'label_attr': {'id' : 'toto'}}) }}</div>
+        <div class="col-10">{{ form_widget(taskForm.title) }}</div>
+    </div>
+    {{ form_row(taskForm.expiratedAt) }}
+
+{{ form_row(taskForm.description) }}
+
+
+{{ form_end(taskForm) }}
+
+{% endblock %}

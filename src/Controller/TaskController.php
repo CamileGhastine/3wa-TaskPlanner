@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Event\EventIsDoneChange;
+use App\Form\TaskType;
 use App\Repository\CategoryRepository;
 use App\Repository\TaskRepository;
 use App\Service\UrgentCalculator;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -113,5 +115,36 @@ class TaskController extends AbstractController
        $dispatcher->dispatch($event, 'EventIsDoneChange');
 
        return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
+    }
+
+    #[Route('/task/create', name:'app_task_create', methods:['POST', 'GET'])]
+    public function create(Request $request, EntityManagerInterface $em): Response
+    {
+        if(!$this->getUser()) {
+            $this->addFlash('error', 'merci de vous connecter pour créer une tâche');
+
+            return $this->redirectToRoute('app_login');
+        }
+
+        $task = new Task();
+        $task->setIsDone(false)
+            ->setUser($this->getUser())
+        ;
+
+        $taskForm = $this->createForm(TaskType::class, $task);
+
+        $taskForm->handleRequest($request);
+
+        if($taskForm->isSubmitted()) {
+            $em->persist($task);
+            $em->flush();
+
+            return $this->redirectToRoute('app_show_task', ['id' => $task->getId()]);
+        }
+
+        return $this->render('/task/create.html.twig', [
+            'taskForm' => $taskForm->createView(),
+
+        ]);
     }
 }
