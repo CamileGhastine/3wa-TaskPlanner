@@ -59,10 +59,12 @@ class Task
 
 
 
-    public function __construct()
+    public function __construct(User $user)
     {
         $this->categories = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->setIsDone(false);
+        $this->setUser($user);
     }
 
     /**

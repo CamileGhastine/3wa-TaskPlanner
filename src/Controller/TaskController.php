@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -118,7 +119,7 @@ class TaskController extends AbstractController
     }
 
     #[Route('/task/create', name:'app_task_create', methods:['POST', 'GET'])]
-    public function create(Request $request, EntityManagerInterface $em): Response
+    public function create(Request $request, EntityManagerInterface $em, FormFactoryInterface $formFactory): Response
     {
         if(!$this->getUser()) {
             $this->addFlash('error', 'merci de vous connecter pour créer une tâche');
@@ -126,10 +127,7 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $task = new Task();
-        $task->setIsDone(false)
-            ->setUser($this->getUser())
-        ;
+        $task = new Task($this->getUser());
 
         $taskForm = $this->createForm(TaskType::class, $task);
 
@@ -146,5 +144,9 @@ class TaskController extends AbstractController
             'taskForm' => $taskForm->createView(),
 
         ]);
+    }
+
+    private function verifiedUserConnected () {
+
     }
 }

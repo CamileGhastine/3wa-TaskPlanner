@@ -41,7 +41,9 @@ class TaskType extends AbstractType
                     'placeholder' => 'Ecrire votre texte ici ...'
                 ]
             ])
-            ->add('expiratedAt', DateType::class)
+            ->add('expiratedAt', DateType::class, [
+                'data' => new \DateTime('NOW')
+            ])
             ->add('categories', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'name',
