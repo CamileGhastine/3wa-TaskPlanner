@@ -77,9 +77,11 @@ class Task
     /**
      * @param array $urgent
      */
-    public function setUrgent(array $urgent): void
+    public function setUrgent(array $urgent)
     {
         $this->urgent = $urgent;
+
+        return $this;
     }
 
     public function getId(): ?int

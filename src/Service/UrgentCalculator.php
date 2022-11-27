@@ -25,22 +25,22 @@ class UrgentCalculator
             $date = $task->getExpiratedAt();
             $now = (new DateTime());
             $oneWeek = new DateInterval('P7D');
-            $oneWeekAgo = $now->sub($oneWeek);
+            $oneWeekAgo = (new DateTime())->add($oneWeek);
 
-            if ($date >= $now) {
+            if ($date <= $now) {
                 $urgent = [
                     'color' => 'danger',
                     'label' => 'URGENT'
                 ];
-            } else if ($date < $oneWeekAgo) {
+            } else if ($date > $oneWeekAgo) {
                 $urgent = [
-                    'color' => 'warning',
-                    'label' => 'Rappel'
+                    'color' => 'success',
+                    'label' => 'TO DO'
                 ];
             } else {
                 $urgent = [
-                    'color' => 'succes',
-                    'label' => 'To Do'
+                    'color' => 'warning',
+                    'label' => 'Rappel'
                 ];
             }
             $task->setUrgent($urgent);
